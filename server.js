@@ -3,6 +3,11 @@ const app = express();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const expressValidator = require('express-validator');
+const http = require('http');
+const server = http.Server(app);
+const socketIO = require('socket.io');
+const io = socketIO(server);
 require('dotenv').config();
 const userRoutes = require('./routes/user.routes');
 
@@ -18,7 +23,7 @@ app.use(bodyParser.urlencoded({
     limit: '10mb',
     extended: true
 }));
-
+app.use(expressValidator());
 app.use('/', userRoutes);
 
 mongoose.Promise = global.Promise;
@@ -51,7 +56,7 @@ app.get('/', (req, res) => {
     res.json('Welcome to Tracker App');
 });
 
-app.listen(config.PORT, () => {
+server.listen(config.PORT, () => {
     console.log("Server is listening on port " + config.PORT);
     startMongo(config.mongo);
 });

@@ -3,27 +3,6 @@ const bcrypt = require('bcrypt');
 const saltRounds = parseInt(process.env.SALT);
 // const logger = require('../../services/logger.services');
 
-const crypto = require('crypto'),
-    algorithm = 'aes-256-ctr',
-    password = 'd6F3Efeq';
-
-function encrypt(text) {
-    var cipher = crypto.createCipher(algorithm, password)
-    // var textPassword = text.toString();
-    logger.info(text, "passwordModel");
-
-    var crypted = cipher.update(text, 'utf8', 'hex')
-    crypted += cipher.final('hex');
-    return crypted;
-}
-
-function decrypt(text) {
-    var decipher = crypto.createDecipher(algorithm, password)
-    var dec = decipher.update(text, 'hex', 'utf8')
-    dec += decipher.final('utf8');
-    return dec;
-}
-
 const UserSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -34,12 +13,6 @@ const UserSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, 'password is required']
-    },
-    reset_password_token: {
-        type: String
-    },
-    reset_password_link_expiry_time: {
-        type: String
     },
     login_token: {
         type: String
@@ -137,19 +110,15 @@ UserSchemaModel.prototype.UpdateOne = (Obj, callback) => {
         if (err) {
             callback(err, null);
         } else {
-            logger.info(result);
             callback(null, result);
         }
     });
 };
 
 UserSchemaModel.prototype.checkUser = function (userObj, callback) {
-    // console.log(userObj);
-
     User.findOne({
         email: userObj.email,
     }, function (err, result) {
-        logger.info(err, 'res ', result);
         if (err) {
             callback(err, null);
         } else {
@@ -164,32 +133,12 @@ UserSchemaModel.prototype.loginByUsername = function (userObj, callback) {
         email: userObj.email,
         password: password
     }, function (err, result) {
-        logger.info(err, 'res ', result);
         if (err) {
             callback(err, null);
         } else {
             callback(null, result);
         }
     });
-};
-
-UserSchemaModel.prototype.changePassword = function (data, callback) {
-    var password = encrypt(data.new_password);
-    data.update_stamp = Date.now();
-    User.updateOne({
-        _id: data.user_id
-    }, {
-            password: password,
-            reset_password_token: '',
-            reset_password_link_expiry_time: ''
-        }, (err, result) => {
-            logger.info('m result ', result);
-            if (err) {
-                callback(err, null);
-            } else {
-                callback(null, result);
-            }
-        });
 };
 
 UserSchemaModel.prototype.findByUserId = function (id, callback) {

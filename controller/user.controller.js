@@ -1,6 +1,6 @@
 const userService = require('../services/user.services');
 const jwtService = require('../services/jwt.services');
-// const constantsParam = require('../constants/static.js');
+const constantsParam = require('../constants/static.js');
 // const errorHandler = require('../handlers/systemError.handler');
 // const logger = require('../services/logger.services');
 const userModel = require('../app/models/user.model');
@@ -51,14 +51,7 @@ exports.registration = (req, res, next) => {
             });
         }
     } catch (error) {
-        responseResult.status = false;
-        if (!errorHandler.checkSystemErrors(err)) {
-            responseResult.message = err;
-            if (typeof err === "object" && err.message) {
-                responseResult.message = err.message;
-            }
-        }
-        return res.status(constantsParam.staticHTTPErrorMessages.INTERNAL_SERVER_ERROR.errorResponseCode).send(responseResult);
+        next(error);
     }
 };
 
@@ -120,14 +113,7 @@ exports.login = (req, res, next) => {
             });
         }
     } catch (error) {
-        responseResult.status = false;
-        if (!errorHandler.checkSystemErrors(err)) {
-            responseResult.message = err;
-            if (typeof err === "object" && err.message) {
-                responseResult.message = err.message;
-            }
-        }
-        return res.status(constantsParam.staticHTTPErrorMessages.INTERNAL_SERVER_ERROR.errorResponseCode).send(responseResult);
+        next(error);
     }
 };
 
@@ -146,32 +132,25 @@ exports.logout = (req, res, next) => {
                 // if (err) {
                 //     return res.status(401).send(response);
                 // } else {
-                    var logoutData = {
-                        decoded: decoded,
-                        token: token
-                    };
-                    userService.logout(logoutData, (error, result) => {
-                        if (error) {
-                            responseResult.status = false;
-                            responseResult.message = "Internal Server Error";
-                            return res.status(constantsParam.staticHTTPErrorMessages.INTERNAL_SERVER_ERROR.errorResponseCode).send(responseResult);
-                        } else {
-                            responseResult.status = true;
-                            responseResult.message = "Logged out successfully from the system";
-                            res.status(constantsParam.staticHTTPSuccessMessages.OK.successResponseCode).send(responseResult);
-                        }
-                    });
+                var logoutData = {
+                    decoded: decoded,
+                    token: token
+                };
+                userService.logout(logoutData, (error, result) => {
+                    if (error) {
+                        responseResult.status = false;
+                        responseResult.message = "Internal Server Error";
+                        return res.status(constantsParam.staticHTTPErrorMessages.INTERNAL_SERVER_ERROR.errorResponseCode).send(responseResult);
+                    } else {
+                        responseResult.status = true;
+                        responseResult.message = "Logged out successfully from the system";
+                        res.status(constantsParam.staticHTTPSuccessMessages.OK.successResponseCode).send(responseResult);
+                    }
+                });
                 // }
             });
         }
-    } catch (err) {
-        responseResult.status = false;
-        if (!errorHandler.checkSystemErrors(err)) {
-            responseResult.message = err;
-            if (typeof err === "object" && err.message) {
-                responseResult.message = err.message;
-            }
-        }
-        return res.status(constantsParam.staticHTTPErrorMessages.INTERNAL_SERVER_ERROR.errorResponseCode).send(responseResult);
+    } catch (error) {
+        next(error);
     }
 };
