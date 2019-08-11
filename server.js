@@ -18,7 +18,6 @@ app.use(cors());
 app.use(bodyParser.json({
     limit: '10mb'
 }));
-// app.use(bodyParser({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({
     limit: '10mb',
     extended: true
@@ -54,6 +53,17 @@ function startMongo(mongoObj) {
 
 app.get('/', (req, res) => {
     res.json('Welcome to Tracker App');
+});
+
+io.on('connection', function (socket) {
+    console.log('Client connected.');
+    socket.on('disconnect', function () {
+        console.log('Client disconnected.');
+    });
+    socket.on('new-location', (location) => {
+        console.log(location);
+        io.emit('location', location);
+    });
 });
 
 server.listen(config.PORT, () => {

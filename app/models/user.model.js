@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const saltRounds = parseInt(process.env.SALT);
-// const logger = require('../../services/logger.services');
+const enum_user_type = ['trucker', 'admin'];
+
 
 const UserSchema = new mongoose.Schema({
     email: {
@@ -13,6 +14,11 @@ const UserSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, 'password is required']
+    },
+    type: {
+        type: String,
+        required: [true, 'user type is required'],
+        enum: enum_user_type
     },
     login_token: {
         type: String
@@ -115,54 +121,54 @@ UserSchemaModel.prototype.UpdateOne = (Obj, callback) => {
     });
 };
 
-UserSchemaModel.prototype.checkUser = function (userObj, callback) {
-    User.findOne({
-        email: userObj.email,
-    }, function (err, result) {
-        if (err) {
-            callback(err, null);
-        } else {
-            callback(null, result);
-        }
-    });
-};
+// UserSchemaModel.prototype.checkUser = function (userObj, callback) {
+//     User.findOne({
+//         email: userObj.email,
+//     }, function (err, result) {
+//         if (err) {
+//             callback(err, null);
+//         } else {
+//             callback(null, result);
+//         }
+//     });
+// };
 
-UserSchemaModel.prototype.loginByUsername = function (userObj, callback) {
-    var password = encrypt(userObj.password);
-    User.findOne({
-        email: userObj.email,
-        password: password
-    }, function (err, result) {
-        if (err) {
-            callback(err, null);
-        } else {
-            callback(null, result);
-        }
-    });
-};
+// UserSchemaModel.prototype.loginByUsername = function (userObj, callback) {
+//     var password = encrypt(userObj.password);
+//     User.findOne({
+//         email: userObj.email,
+//         password: password
+//     }, function (err, result) {
+//         if (err) {
+//             callback(err, null);
+//         } else {
+//             callback(null, result);
+//         }
+//     });
+// };
 
-UserSchemaModel.prototype.findByUserId = function (id, callback) {
-    User.findById(id, (err, data) => {
-        if (err) {
-            callback(err);
-        }
-        callback(null, data);
-    });
-};
+// UserSchemaModel.prototype.findByUserId = function (id, callback) {
+//     User.findById(id, (err, data) => {
+//         if (err) {
+//             callback(err);
+//         }
+//         callback(null, data);
+//     });
+// };
 
-UserSchemaModel.prototype.checkByUserName = function (Obj, callback) {
-    // var password = encrypt(Obj.password);
-    var search = {
-        'email': Obj.email
-    };
-    User.findOne(search, function (err, result) {
-        if (err) {
-            callback(err, null);
-        } else {
-            callback(null, result);
-        }
-    });
-};
+// UserSchemaModel.prototype.checkByUserName = function (Obj, callback) {
+//     // var password = encrypt(Obj.password);
+//     var search = {
+//         'email': Obj.email
+//     };
+//     User.findOne(search, function (err, result) {
+//         if (err) {
+//             callback(err, null);
+//         } else {
+//             callback(null, result);
+//         }
+//     });
+// };
 
 UserSchemaModel.prototype.findToken = function (Obj, callback) {
     var search = {

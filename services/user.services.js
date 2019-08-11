@@ -24,16 +24,16 @@ exports.login = (data, callback) => {
     });
 };
 
-exports.checkByUserName = (data, callback) => {
+// exports.checkByUserName = (data, callback) => {
 
-    userModel.checkByUserName(data, function (err, result) {
-        if (err) {
-            callback(err, null);
-        } else {
-            return callback(null, result);
-        }
-    });
-};
+//     userModel.checkByUserName(data, function (err, result) {
+//         if (err) {
+//             callback(err, null);
+//         } else {
+//             return callback(null, result);
+//         }
+//     });
+// };
 
 exports.updateLogin = (data, callback) => {
     userModel.UpdateOne(data, (errorUpdate, resultLogin) => {
